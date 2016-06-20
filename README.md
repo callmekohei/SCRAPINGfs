@@ -16,7 +16,7 @@ $ source build.bash
 
 How to use
 ---
-###googleSearch
+#####googleSearch
 ```fsharp
 open scrapingFs.scrapingFs
 
@@ -31,7 +31,7 @@ callmekohei (callmekohei) · GitHub                               	https://githu
 GitHub - callmekohei/koffeeVBA: koffeeVBA is free VBA Library ...	https://github.com/callmekohei/koffeeVBA                   
 ...
 ```
-###dynamicLink
+#####dynamicLink
 ```fsharp
 open scrapingFs.scrapingFs
 open FSharp.Data
