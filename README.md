@@ -18,22 +18,19 @@ How to use
 ---
 #####googleSearch
 ```fsharp
-open scrapingFs
-
-googleSearch "callmekohei"
-|> justify
+scrapingFs.googleSearch "callmekohei"
+|> scrapingFs.justify
 |> List.iter ( fun [a;b] -> printfn "%s\t%s" a b )
 ```
 result
 ```text
-kohei (@callmekohei) - Twitter             	https://twitter.com/callmekohei                            
-callmekohei (callmekohei) · GitHub         	https://github.com/callmekohei                             
-GitHub - callmekohei/koffeeVBA: koffeeV ...	https://github.com/callmekohei/koffeeVBA                   
+kohei (@callmekohei) - Twitter              https://twitter.com/callmekohei
+callmekohei (callmekohei) · GitHub          https://github.com/callmekohei
+GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffeeVBA
 ...
 ```
 #####dynamicLink
 ```fsharp
-open scrapingFs
 open FSharp.Data
 open System.Text.RegularExpressions
 
@@ -54,7 +51,7 @@ let s =
     """
 HtmlDocument.Parse s
 |> HtmlDocument.body
-|> dynamicLink "onclick" "div > a" "span.next.last"
+|> scrapingFs.dynamicLink "onclick" "div > a" "span.next.last"
 |> fun s -> Regex.Match ( s, "account.*(?=',)" )
 |> printfn "%A"
 ```
