@@ -64,7 +64,7 @@ account=callmekohei
 ```
 Thanks
 ---
-@haxe, @adacola, @omanuke and other Japanese F#er.  
+@haxe, @adacola, @omanuke, @yukitos and other Japanese F#er.  
 
 License
 ---
