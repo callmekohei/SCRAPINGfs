@@ -135,8 +135,7 @@ let googleSearch keyword =
     let baseStr  = "http://www.google.co.uk/search?q=" + keyword
     let fragment = "#q=" + keyword + "&start="
 
-    baseStr :: ( [10..10..30]
-    |> List.map    ( fun n ->  baseStr + fragment + string n ))
+    baseStr :: ( [10..10..30] |> List.map    ( fun n ->  baseStr + fragment + string n ))
     |> Seq.map     ( fun url -> HtmlDocument.Load url )
     |> Seq.map     HtmlDocument.body
     |> Seq.collect ( fun n -> n.CssSelect "a" )
