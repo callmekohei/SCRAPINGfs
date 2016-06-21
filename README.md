@@ -18,7 +18,7 @@ How to use
 ---
 #####googleSearch
 ```fsharp
-open scrapingFs.scrapingFs
+open scrapingFs
 
 googleSearch "callmekohei"
 |> justify
@@ -26,14 +26,14 @@ googleSearch "callmekohei"
 ```
 result
 ```text
-kohei (@callmekohei) - Twitter                                   	https://twitter.com/callmekohei                            
-callmekohei (callmekohei) · GitHub                               	https://github.com/callmekohei                             
-GitHub - callmekohei/koffeeVBA: koffeeVBA is free VBA Library ...	https://github.com/callmekohei/koffeeVBA                   
+kohei (@callmekohei) - Twitter             	https://twitter.com/callmekohei                            
+callmekohei (callmekohei) · GitHub         	https://github.com/callmekohei                             
+GitHub - callmekohei/koffeeVBA: koffeeV ...	https://github.com/callmekohei/koffeeVBA                   
 ...
 ```
 #####dynamicLink
 ```fsharp
-open scrapingFs.scrapingFs
+open scrapingFs
 open FSharp.Data
 open System.Text.RegularExpressions
 
