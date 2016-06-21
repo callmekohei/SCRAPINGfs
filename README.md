@@ -64,7 +64,8 @@ account=callmekohei
 ```
 Thanks
 ---
-@haxe, @adacola, @omanuke, @yukitos and other Japanese F#er.  
+Japanese F#er.  
+visit: https://gitter.im/fsugjp/public  
 
 License
 ---
