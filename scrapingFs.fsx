@@ -1,4 +1,4 @@
-module scrapingFs
+module ScrapingFs
 open System.IO
 open System.Text
 open System.Text.RegularExpressions

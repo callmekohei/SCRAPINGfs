@@ -1,6 +1,6 @@
 #/bin/bash
 
-file='scrapingFs'
+file='SCRAPINGfs'
 lib1='./packages/FSharp.Data/lib/net40/FSharp.Data.dll'
 lib2='./packages/FSharp.Data/lib/net40/FSharp.Data.DesignTime.dll'
 
