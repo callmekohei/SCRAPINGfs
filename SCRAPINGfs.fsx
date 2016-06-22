@@ -54,7 +54,7 @@ let getElementsWithString targetNodeName str (node:HtmlNode) =
     Links
 *)
 
-let staticLink attrName cssSelector (node:HtmlNode) =
+let staticLink (attrName:string) (cssSelector:string) (node:HtmlNode) =
     let value = node |> fun n -> n.CssSelect cssSelector
     if Seq.isEmpty value then "" else
     value
@@ -138,8 +138,8 @@ let googleSearch keyword =
     baseStr :: ( [10..10..30] |> List.map    ( fun n ->  baseStr + fragment + string n ))
     |> Seq.map     ( fun url -> HtmlDocument.Load url )
     |> Seq.map     HtmlDocument.body
-    |> Seq.collect ( fun n -> n.CssSelect "a" )
-    |> Seq.choose  ( fun x -> x.TryGetAttribute("href") |> Option.map (fun a -> x.InnerText(), a.Value()) )
+    |> Seq.collect ( fun n -> n.CssSelect "a[href]" )
+    |> Seq.map     ( fun n -> n.InnerText(), n.AttributeValue "href" )
     |> Seq.filter  ( fun (name, url) -> name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
     |> Seq.map     ( fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
     |> Seq.map     ( fun (a,b) -> [a;b] )
