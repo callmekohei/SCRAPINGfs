@@ -18,8 +18,8 @@ How to use
 ---
 #####googleSearch
 ```fsharp
-ScrapingFs.googleSearch "callmekohei"
-|> ScrapingFs.justify
+ScrapingFs.GoogleSearch "callmekohei"
+|> ScrapingFs.Justify
 |> List.iter ( fun [a;b] -> printfn "%s\t%s" a b )
 ```
 result
@@ -51,7 +51,7 @@ let s =
     """
 HtmlDocument.Parse s
 |> HtmlDocument.body
-|> ScrapingFs.dynamicLink "onclick" "div > a" "span.next.last"
+|> ScrapingFs.DynamicLink "onclick" "div > a" "span.next.last"
 |> fun s -> Regex.Match ( s, "account.*(?=',)" )
 |> printfn "%A"
 ```
