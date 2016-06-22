@@ -29,6 +29,7 @@ callmekohei (callmekohei) · GitHub          https://github.com/callmekohei
 GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffeeVBA
 ...
 ```
+.  
 #####DynamicLink
 ```fsharp
 open FSharp.Data
@@ -59,7 +60,7 @@ result
 ```
 account=callmekohei
 ```
-
+.  
 #####FetchHtmlsByStaticLinks
 ```fsharp
  +---------+         +---------+        +---------+
