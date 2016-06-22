@@ -62,8 +62,10 @@ account=callmekohei
 
 #####FetchHtmlsByStaticLinks
 ```fsharp
+let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
+
 url
-|> ScrapingFs.FetchHtmlsByStaticLinks "href" "div > ul > li > a"
+|> ScrapingFs.FetchHtmlsByStaticLinks "href" cssSelectorShowNextPageLink
 ```
 result ( image )
 ```
