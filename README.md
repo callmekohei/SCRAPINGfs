@@ -62,6 +62,16 @@ account=callmekohei
 
 #####FetchHtmlsByStaticLinks
 ```fsharp
+ +--------+         +--------+        +--------+
+    page1     +-->     page2     +-->    page3
+              |                  |
+    next      |        next      |       next
+    button  --+        button  --+       button
+ +--------+         +--------+        +--------+
+```
+
+
+```fsharp
 let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
 
 url
