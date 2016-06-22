@@ -62,12 +62,12 @@ account=callmekohei
 
 #####FetchHtmlsByStaticLinks
 ```fsharp
- +--------+         +--------+        +--------+
-    page1     +-->     page2     +-->    page3
-              |                  |
-    next      |        next      |       next
-    button  --+        button  --+       button
- +--------+         +--------+        +--------+
+ +---------+         +---------+        +---------+
+    page1      +-->     page2      +-->    page3
+               |                   |
+    next       |        next       |       next
+    button   --+        button   --+       button
+ +---------+         +---------+        +---------+
 ```
 
 
