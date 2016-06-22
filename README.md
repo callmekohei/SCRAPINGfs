@@ -59,6 +59,24 @@ result
 ```
 account=callmekohei
 ```
+
+#####FetchHtmlsByStaticLinks
+```fsharp
+url
+|> ScrapingFs.FetchHtmlsByStaticLinks "href" "div > ul > li > a"
+```
+result(image)
+```
+[
+    html page1
+    html page2
+    ...
+    html page100
+]
+
+```
+
+
 Thanks
 ---
 Japanese F#er  
