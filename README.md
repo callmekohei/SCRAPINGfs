@@ -16,7 +16,7 @@ $ source build.bash
 
 How to use
 ---
-#####googleSearch
+#####GoogleSearch
 ```fsharp
 ScrapingFs.GoogleSearch "callmekohei"
 |> ScrapingFs.Justify
@@ -29,7 +29,7 @@ callmekohei (callmekohei) · GitHub          https://github.com/callmekohei
 GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffeeVBA
 ...
 ```
-#####dynamicLink
+#####DynamicLink
 ```fsharp
 open FSharp.Data
 open System.Text.RegularExpressions
