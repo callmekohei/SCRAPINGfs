@@ -65,7 +65,7 @@ account=callmekohei
 url
 |> ScrapingFs.FetchHtmlsByStaticLinks "href" "div > ul > li > a"
 ```
-result(image)
+result ( image )
 ```
 [
     html page1
