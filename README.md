@@ -61,7 +61,7 @@ account=callmekohei
 ```
 Thanks
 ---
-Japanese F#er ( special thanks: @Haxe, @adacola )  
+Japanese F#er  
 visit: https://gitter.im/fsugjp/public  
 
 License
