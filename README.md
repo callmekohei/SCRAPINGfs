@@ -65,7 +65,7 @@ account=callmekohei
 let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
 
 url
-|> ScrapingFs.FetchHtmlsByStaticLinks "href" cssSelectorShowNextPageLink
+|> ScrapingFs.FetchHtmlsByStaticLinks "href" cssSelectorShowsNextPageLink
 ```
 result ( image )
 ```
