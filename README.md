@@ -80,10 +80,10 @@ url
 result ( image )
 ```
 [
-    html page1
-    html page2
+    page1
+    page2
     ...
-    html page100
+    page100
 ]
 
 ```
