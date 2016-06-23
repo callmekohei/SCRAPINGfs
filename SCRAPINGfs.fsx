@@ -4,6 +4,12 @@ open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
 
+(*
+    term: subject
+    Subject of a selector with Child combinator
+    see: http://css4-selectors.com/selector/css4/subject-of-selector-with-child-combinator/
+*)
+
 
 
 (*
@@ -15,7 +21,8 @@ let GetElements nodeName attrName attrValue (node:HtmlNode) =
         Regex.IsMatch ( HtmlNode.name n, nodeName )
         && Regex.IsMatch ( HtmlNode.attributeValue attrName n, attrValue ) ) node
 
-let GetElementsWithAttributeValue targetSelector judgeSelector (node:HtmlNode) =
+// Subject of a selector with Child combinator
+let GetElementsBySubject targetSelector judgeSelector (node:HtmlNode) =
     let cssSelect selector (n:HtmlNode) = n.CssSelect selector
     let search n = n |> cssSelect targetSelector |> List.filter (cssSelect judgeSelector >> List.isEmpty >> not) |> List.distinct
     search node
@@ -37,8 +44,9 @@ let GetAttributeValue (attrName:string) (cssSelector:string) (node:HtmlNode) =
     |> Seq.exactlyOne
     |> HtmlNode.attributeValue attrName
 
-let GetAttributeValue2 attrName targetSelector judgeSelector (node:HtmlNode) =
-    let value = node |> GetElementsWithAttributeValue targetSelector judgeSelector
+//Subject of a selector with Child combinator
+let GetAttributeValueBySubject attrName targetSelector judgeSelector (node:HtmlNode) =
+    let value = node |> GetElementsBySubject targetSelector judgeSelector
     if Seq.isEmpty value then "" else
     value
     |> Seq.exactlyOne
@@ -66,7 +74,7 @@ let FetchHtmls (urls:list<string>) =
         | _  -> loop ( ( FetchDynamicHtml (List.head lst) ) :: acc ) ( List.tail lst )
     loop [] urls
 
-let FetchHtmlsByStaticLinks attrName cssSelector url =
+let FetchHtmlsByLinks attrName cssSelector url =
     let rec pages (acc:list<string>) u =
         match u with
         | "" -> acc
@@ -84,7 +92,8 @@ let FetchHtmlsByStaticLinks attrName cssSelector url =
 
     pages [] url
 
-let FetchHtmlsByDynamicLinks attrName targetSelector judgeSelector pattern url =
+//Subject of a selector with Child combinator
+let FetchHtmlsByLinksBySubject attrName targetSelector judgeSelector pattern url =
     let rec pages (acc:list<string>) u =
         match u with
         | "" -> acc
@@ -92,7 +101,7 @@ let FetchHtmlsByDynamicLinks attrName targetSelector judgeSelector pattern url =
                 else
                 let html = FetchDynamicHtml u
                 let node = html |> HtmlDocument.Parse |> HtmlDocument.body
-                let link = GetAttributeValue2 attrName targetSelector judgeSelector node
+                let link = GetAttributeValueBySubject attrName targetSelector judgeSelector node
                            |> fun lk ->
                                 match lk with
                                 | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk

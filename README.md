@@ -30,8 +30,9 @@ GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffe
 ...
 ```
 .  
-#####GetAttributeValue2
+#####GetAttributeValueBySubject
 ```fsharp
+open FSharp.Data
 open System.Text.RegularExpressions
 
 let s =
@@ -51,7 +52,7 @@ let s =
     """
 HtmlDocument.Parse s
 |> HtmlDocument.body
-|> ScrapingFs.GetAttributeValue2 "onclick" "div > a[onclick]" "span.next.last"
+|> ScrapingFs.GetAttributeValueBySubject "onclick" "div > a[onclick]" "span.next.last"
 |> fun s -> Regex.Match ( s, "account.*(?=',)" )
 |> printfn "%A"
 ```
@@ -60,7 +61,7 @@ result
 account=callmekohei
 ```
 .  
-#####FetchHtmlsByStaticLinks
+#####FetchHtmlsByLinks
 ```fsharp
  +---------+         +---------+        +---------+
     page1      +-->     page2      +-->    page3
@@ -75,7 +76,7 @@ account=callmekohei
 let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
 
 url
-|> ScrapingFs.FetchHtmlsByStaticLinks "href" cssSelectorShowsNextPageLink
+|> ScrapingFs.FetchHtmlsByLinks "href" cssSelectorShowsNextPageLink
 ```
 result ( image )
 ```
