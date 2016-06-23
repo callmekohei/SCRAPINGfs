@@ -1,15 +1,13 @@
+#if INTERACTIVE
+#I @"./packages/FSharp.Data/lib/net40/"
+#r @"FSharp.Data.DesignTime.dll"
+#r @"FSharp.Data.dll"
+#endif
 module ScrapingFs
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
-
-(*
-    term: subject
-    Subject of a selector with Child combinator
-    see: http://css4-selectors.com/selector/css4/subject-of-selector-with-child-combinator/
-*)
-
 
 
 (*
@@ -21,11 +19,6 @@ let GetElements nodeName attrName attrValue (node:HtmlNode) =
         Regex.IsMatch ( HtmlNode.name n, nodeName )
         && Regex.IsMatch ( HtmlNode.attributeValue attrName n, attrValue ) ) node
 
-// TODO: delete this function when ':parent Selector' implemented
-let GetElementsBySubject targetSelector judgeSelector (node:HtmlNode) =
-    let cssSelect selector (n:HtmlNode) = n.CssSelect selector
-    let search n = n |> cssSelect targetSelector |> List.filter (cssSelect judgeSelector >> List.isEmpty >> not) |> List.distinct
-    search node
 
 let GetElementsWithString targetNodeName str (node:HtmlNode) =
     HtmlNode.descendants false ( fun n ->
@@ -33,25 +26,17 @@ let GetElementsWithString targetNodeName str (node:HtmlNode) =
         && Regex.IsMatch ( HtmlNode.innerText n, str ) ) node
 
 
+
 (*
-    Attribute Value
+    Attribute Values
 *)
 
-let GetAttributeValue (attrName:string) (cssSelector:string) (node:HtmlNode) =
-    let value = node |> fun n -> n.CssSelect cssSelector
-    if Seq.isEmpty value then "" else
-    value
-    |> Seq.exactlyOne
-    |> HtmlNode.attributeValue attrName
-
-// TODO: delete this function when ':parent Selector' implemented
-let GetAttributeValueBySubject attrName targetSelector judgeSelector (node:HtmlNode) =
-    let value = node |> GetElementsBySubject targetSelector judgeSelector
-    if Seq.isEmpty value then "" else
-    value
-    |> Seq.exactlyOne
-    |> HtmlNode.attributeValue attrName
-
+let GetAttributeValues (attrName:string) (cssSelector:string) (node:HtmlNode) =
+    node.CssSelect cssSelector
+    |> fun l ->
+        match Seq.isEmpty l with
+        | true  -> None
+        | false -> l |>  List.map ( HtmlNode.attributeValue attrName ) |> Some
 
 (*
     HTML
@@ -74,44 +59,28 @@ let FetchHtmls (urls:list<string>) =
         | _  -> loop ( ( FetchDynamicHtml (List.head lst) ) :: acc ) ( List.tail lst )
     loop [] urls
 
-let FetchHtmlsByLinks attrName cssSelector url =
-    let rec pages (acc:list<string>) u =
-        match u with
+let FetchHtmlsByNextLink attrName cssSelector url =
+    let rec pages (acc:list<string>) nextLink =
+        match nextLink with
         | "" -> acc
         | _  -> if acc.Length > 100 then acc
                 else
-                let html = FetchDynamicHtml u
-                let node = html |> HtmlDocument.Parse |> HtmlDocument.body
-                let link = GetAttributeValue attrName cssSelector node
-                           |> fun lk ->
-                                match lk with
-                                | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk
-                                | "" -> ""
-                                | _  -> lk |> fun query -> System.UriBuilder( u, Query = query ).ToString()
+                let html = nextLink |> FetchDynamicHtml
+                let node = html     |> HtmlDocument.Parse |> HtmlDocument.body
+                let link = node     |> fun n -> n.CssSelect cssSelector
+                                    |> fun l ->
+                                        match Seq.isEmpty l with
+                                        | true  -> [""]
+                                        | false -> l |>  List.map ( HtmlNode.attributeValue attrName )
+                                    |> List.exactlyOne
+                                    |> fun (nLink:string) ->
+                                            match nLink with
+                                            | _  when nLink.StartsWith "http://" || nLink.StartsWith "https://" -> nLink
+                                            | "" -> ""
+                                            | _  -> nLink |> fun query -> System.UriBuilder( nextLink, Query = query ).ToString()
                 pages ( html :: acc ) link
-
     pages [] url
 
-
-// TODO: delete this function when ':parent Selector' implemented
-let FetchHtmlsByLinksBySubject attrName targetSelector judgeSelector pattern url =
-    let rec pages (acc:list<string>) u =
-        match u with
-        | "" -> acc
-        | _  -> if acc.Length > 100 then acc
-                else
-                let html = FetchDynamicHtml u
-                let node = html |> HtmlDocument.Parse |> HtmlDocument.body
-                let link = GetAttributeValueBySubject attrName targetSelector judgeSelector node
-                           |> fun lk ->
-                                match lk with
-                                | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk
-                                | "" -> ""
-                                | _  -> lk |> fun s -> Regex.Match( s, pattern ).Value
-                                           |> fun query -> System.UriBuilder( u, Query = query ).ToString()
-                pages ( html :: acc ) link
-
-    pages [] url
 
 
 (*
@@ -132,6 +101,7 @@ let GoogleSearch keyword =
     |> Seq.map     ( fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
     |> Seq.map     ( fun (a,b) -> [a;b] )
     |> Seq.toList
+
 
 
 (*
@@ -166,3 +136,40 @@ let Justify lst =
     |> swapRowColumn
 
 
+
+(*
+
+    TODO: delete these functions when ':parent Selector' implemented
+
+*)
+
+let GetElementsBySubject targetSelector judgeSelector (node:HtmlNode) =
+    let cssSelect selector (n:HtmlNode) = n.CssSelect selector
+    let search n = n |> cssSelect targetSelector |> List.filter (cssSelect judgeSelector >> List.isEmpty >> not) |> List.distinct
+    search node
+
+let GetAttributeValueBySubject attrName targetSelector judgeSelector (node:HtmlNode) =
+    let value = node |> GetElementsBySubject targetSelector judgeSelector
+    if Seq.isEmpty value then "" else
+    value
+    |> Seq.exactlyOne
+    |> HtmlNode.attributeValue attrName
+
+let FetchHtmlsByLinksBySubject attrName targetSelector judgeSelector pattern url =
+    let rec pages (acc:list<string>) u =
+        match u with
+        | "" -> acc
+        | _  -> if acc.Length > 100 then acc
+                else
+                let html = FetchDynamicHtml u
+                let node = html |> HtmlDocument.Parse |> HtmlDocument.body
+                let link = GetAttributeValueBySubject attrName targetSelector judgeSelector node
+                           |> fun lk ->
+                                match lk with
+                                | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk
+                                | "" -> ""
+                                | _  -> lk |> fun s -> Regex.Match( s, pattern ).Value
+                                           |> fun query -> System.UriBuilder( u, Query = query ).ToString()
+                pages ( html :: acc ) link
+
+    pages [] url

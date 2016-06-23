@@ -29,39 +29,107 @@ callmekohei (callmekohei) · GitHub          https://github.com/callmekohei
 GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffeeVBA
 ...
 ```
-.  
-#####GetAttributeValueBySubject
-```fsharp
-open FSharp.Data
-open System.Text.RegularExpressions
 
+.  
+
+#####GetElemnts
+```fsharp
 let s =
     """
     <body>
-        <div class="prevNext f_right">
-        <!-- AJAX link -->
-            <span>1</span>
-            <a href="#" onclick="ExecuteAjaxRequest('./articleList', 'account=12345', 'DispListArticle'); return false;">
-                <span class="last">2</span>
-            </a>
-            <a href="#" onclick="ExecuteAjaxRequest('./articleList', 'account=callmekohei', 'DispListArticle'); return false;">
-                <span class="next last">Next</span>
-            </a>
-        </div>
+        <div class="foo"/>
+        <div class="bar"/>
+        <div href ="abc/">
+        <div href/>
+
+        <a   class="foo"/>
+        <a   class="bar"/>
+        <a   href ="abc"/>
+        <a   href/>
     </body>
     """
-HtmlDocument.Parse s
+
+s
+|> HtmlDocument.Parse
 |> HtmlDocument.body
-|> ScrapingFs.GetAttributeValueBySubject "onclick" "div > a[onclick]" "span.next.last"
-|> fun s -> Regex.Match ( s, "account.*(?=',)" )
+|> ScrapingFs.GetElements "div|a" "class" "foo|bar" 
 |> printfn "%A"
 ```
 result
 ```
-account=callmekohei
+seq [<div class="foo" />; <div class="bar" />; <a class="foo" />; <a class="bar" />]
 ```
 .  
-#####FetchHtmlsByLinks
+
+#####GetElementsWithString
+```fsharp
+let s =
+    """
+    <body>
+        <tr>
+            <th>card</th>
+            <td>
+                <p>
+                <strong>enable</strong> （VISA、MASTER、JCB、AMEX）
+                </p>
+            </td>
+        </tr>
+
+        <tr>
+            <th>seats</th>
+            <td>
+                <p>
+                    <strong>90seats</strong>
+                </p>
+            </td>
+        </tr>
+    </body>
+    """
+
+s
+|> HtmlDocument.Parse
+|> HtmlDocument.body
+|> ScrapingFs.GetElementsWithString "tr" "card" 
+|> printfn "%A"
+```
+result
+```
+seq[<tr>
+        <th>card</th>
+        <td>
+            <p>
+                <strong>enable</strong> （VISA、MASTER、JCB、AMEX） 
+            </p>
+        </td>
+    </tr>]
+```
+
+.  
+#####GetAttributeValues
+```fsharp
+let s =
+    """
+    <frame src="callmekohei/menu.html" name="menu">
+        <frame src="callmekohei/company.html" name="main" />
+    </frame>
+    """
+
+s
+|> HtmlDocument.Parse
+|> HtmlDocument.elements
+|> List.exactlyOne
+|> ScrapingFs.GetAttributeValues "src" "frame[src]"
+|> printfn "%A"
+
+```
+result
+```
+Some ["callmekohei/menu.html"; "callmekohei/company.html"]
+```
+
+
+.  
+#####FetchHtmlsByNextLink
 ```fsharp
  +---------+         +---------+        +---------+
     page1      +-->     page2      +-->    page3
@@ -76,7 +144,7 @@ account=callmekohei
 let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
 
 url
-|> ScrapingFs.FetchHtmlsByLinks "href" cssSelectorShowsNextPageLink
+|> ScrapingFs.FetchHtmlsByNextLink "href" cssSelectorShowsNextPageLink
 ```
 result ( image )
 ```
@@ -88,6 +156,9 @@ result ( image )
 ]
 
 ```
+
+
+.  
 
 
 Thanks
