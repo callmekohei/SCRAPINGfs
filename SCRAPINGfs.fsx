@@ -21,7 +21,7 @@ let GetElements nodeName attrName attrValue (node:HtmlNode) =
         Regex.IsMatch ( HtmlNode.name n, nodeName )
         && Regex.IsMatch ( HtmlNode.attributeValue attrName n, attrValue ) ) node
 
-// TODO: delete this function when':parent Selector' inmplemented
+// TODO: delete this function when ':parent Selector' implemented
 let GetElementsBySubject targetSelector judgeSelector (node:HtmlNode) =
     let cssSelect selector (n:HtmlNode) = n.CssSelect selector
     let search n = n |> cssSelect targetSelector |> List.filter (cssSelect judgeSelector >> List.isEmpty >> not) |> List.distinct
@@ -44,7 +44,7 @@ let GetAttributeValue (attrName:string) (cssSelector:string) (node:HtmlNode) =
     |> Seq.exactlyOne
     |> HtmlNode.attributeValue attrName
 
-// TODO: delete this function when':parent Selector' inmplemented
+// TODO: delete this function when ':parent Selector' implemented
 let GetAttributeValueBySubject attrName targetSelector judgeSelector (node:HtmlNode) =
     let value = node |> GetElementsBySubject targetSelector judgeSelector
     if Seq.isEmpty value then "" else
@@ -93,7 +93,7 @@ let FetchHtmlsByLinks attrName cssSelector url =
     pages [] url
 
 
-// TODO: delete this function when':parent Selector' inmplemented
+// TODO: delete this function when ':parent Selector' implemented
 let FetchHtmlsByLinksBySubject attrName targetSelector judgeSelector pattern url =
     let rec pages (acc:list<string>) u =
         match u with
