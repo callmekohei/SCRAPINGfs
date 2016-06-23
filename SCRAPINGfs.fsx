@@ -27,17 +27,17 @@ let GetElementsWithString targetNodeName str (node:HtmlNode) =
 
 
 (*
-    Links
+    Attribute Value
 *)
 
-let StaticLink (attrName:string) (cssSelector:string) (node:HtmlNode) =
+let GetAttributeValue (attrName:string) (cssSelector:string) (node:HtmlNode) =
     let value = node |> fun n -> n.CssSelect cssSelector
     if Seq.isEmpty value then "" else
     value
     |> Seq.exactlyOne
     |> HtmlNode.attributeValue attrName
 
-let DynamicLink attrName targetSelector judgeSelector (node:HtmlNode) =
+let GetAttributeValue2 attrName targetSelector judgeSelector (node:HtmlNode) =
     let value = node |> GetElementsWithAttributeValue targetSelector judgeSelector
     if Seq.isEmpty value then "" else
     value
@@ -74,7 +74,7 @@ let FetchHtmlsByStaticLinks attrName cssSelector url =
                 else
                 let html = FetchDynamicHtml u
                 let node = html |> HtmlDocument.Parse |> HtmlDocument.body
-                let link = StaticLink attrName cssSelector node
+                let link = GetAttributeValue attrName cssSelector node
                            |> fun lk ->
                                 match lk with
                                 | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk
@@ -92,7 +92,7 @@ let FetchHtmlsByDynamicLinks attrName targetSelector judgeSelector pattern url =
                 else
                 let html = FetchDynamicHtml u
                 let node = html |> HtmlDocument.Parse |> HtmlDocument.body
-                let link = DynamicLink attrName targetSelector judgeSelector node
+                let link = GetAttributeValue2 attrName targetSelector judgeSelector node
                            |> fun lk ->
                                 match lk with
                                 | _  when lk.StartsWith "http://" || lk.StartsWith "https://" -> lk

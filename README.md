@@ -30,9 +30,8 @@ GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffe
 ...
 ```
 .  
-#####DynamicLink
+#####GetAttributeValue2
 ```fsharp
-open FSharp.Data
 open System.Text.RegularExpressions
 
 let s =
@@ -52,7 +51,7 @@ let s =
     """
 HtmlDocument.Parse s
 |> HtmlDocument.body
-|> ScrapingFs.DynamicLink "onclick" "div > a" "span.next.last"
+|> ScrapingFs.GetAttributeValue2 "onclick" "div > a[onclick]" "span.next.last"
 |> fun s -> Regex.Match ( s, "account.*(?=',)" )
 |> printfn "%A"
 ```
