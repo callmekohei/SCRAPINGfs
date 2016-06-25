@@ -55,7 +55,7 @@ GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffe
 
 .  
 
-#####GetElemnts
+#####GetElements
 ```fsharp
 open FSharp.Data
 open ScrapingFs
