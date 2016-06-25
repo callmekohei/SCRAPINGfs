@@ -22,6 +22,29 @@ type Sc () =
             | _ -> new System.IO.StreamReader(stream)
         reader.ReadToEnd ()
 
+    static member FetchHtmlWithFrame (url:string) =
+        let html    = url   |> Sc.FetchDynamicHtml
+        let node    = html  |> HtmlDocument.Parse |> HtmlDocument.elements |> List.exactlyOne
+        let baseUrl = Sc.GetBaseUrl( url, node )
+        let links0  = node  |> Sc.GetAttributeValues "src" "frame"
+                            |> fun l -> match Option.isSome l  with
+                                        | false -> None
+                                        | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
+        let links1  = node  |> Sc.GetAttributeValues "src" "iframe"
+                            |> fun l -> match Option.isSome l  with
+                                        | false -> None
+                                        | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
+        let links   = [links0; links1]
+                     |> List.filter Option.isSome
+                     |> List.collect ( fun optl -> Option.get optl)
+                     |> fun l -> match List.isEmpty l with
+                                 | true  -> None
+                                 | false -> Some l
+
+        match Option.isSome links with
+        | false -> html :: []
+        | true  -> html :: ( links |> Option.get |> Sc.FetchHtmls )
+
     static member FetchHtmls (urls:list<string>) =
         let rec loop acc lst =
             match lst with
