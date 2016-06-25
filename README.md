@@ -21,7 +21,7 @@ Structure
 .
 └── ScrapingFs
      ├── Sc
-        ├── FetchDynamicHtml
+        ├── FetchHtml
         ├── FetchHtmls
         ├── FetchHtmlsByNextLink 
         ├── GetBaseUrl

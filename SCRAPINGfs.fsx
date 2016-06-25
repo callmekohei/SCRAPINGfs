@@ -12,44 +12,50 @@ open FSharp.Data
 
 type Sc () =
 
-    static member FetchDynamicHtml (url:string) =
-        let req    = System.Net.WebRequest.Create(url)
-        let rep    = req.GetResponse ()
-        use stream = rep.GetResponseStream ()
-        use reader =
-            match Regex.Match(rep.ContentType, @"charset=(.*)") with
-            | m when m.Success -> new StreamReader(stream, Encoding.GetEncoding(m.Groups.[1].Value))
-            | _ -> new System.IO.StreamReader(stream)
-        reader.ReadToEnd ()
+    static member FetchHtml (url:string, ?includeFrame:bool) =
 
-    static member FetchHtmlWithFrame (url:string) =
-        let html    = url   |> Sc.FetchDynamicHtml
-        let node    = html  |> HtmlDocument.Parse |> HtmlDocument.elements |> List.exactlyOne
-        let baseUrl = Sc.GetBaseUrl( url, node )
-        let links0  = node  |> Sc.GetAttributeValues "src" "frame"
-                            |> fun l -> match Option.isSome l  with
-                                        | false -> None
-                                        | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
-        let links1  = node  |> Sc.GetAttributeValues "src" "iframe"
-                            |> fun l -> match Option.isSome l  with
-                                        | false -> None
-                                        | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
-        let links   = [links0; links1]
-                     |> List.filter Option.isSome
-                     |> List.collect ( fun optl -> Option.get optl)
-                     |> fun l -> match List.isEmpty l with
-                                 | true  -> None
-                                 | false -> Some l
+        let FetchHtml (url:string) =
+            let req    = System.Net.WebRequest.Create(url)
+            let rep    = req.GetResponse ()
+            use stream = rep.GetResponseStream ()
+            use reader =
+                match Regex.Match(rep.ContentType, @"charset=(.*)") with
+                | m when m.Success -> new StreamReader(stream, Encoding.GetEncoding(m.Groups.[1].Value))
+                | _ -> new System.IO.StreamReader(stream)
+            reader.ReadToEnd ()
 
-        match Option.isSome links with
-        | false -> html :: []
-        | true  -> html :: ( links |> Option.get |> Sc.FetchHtmls )
+        let FetchHtmlWithFrame (url:string) =
+            let html    = url   |> FetchHtml
+            let node    = html  |> HtmlDocument.Parse |> HtmlDocument.elements |> List.exactlyOne
+            let baseUrl = Sc.GetBaseUrl( url, node )
+            let links0  = node  |> Sc.GetAttributeValues "src" "frame"
+                                |> fun l -> match Option.isSome l  with
+                                            | false -> None
+                                            | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
+            let links1  = node  |> Sc.GetAttributeValues "src" "iframe"
+                                |> fun l -> match Option.isSome l  with
+                                            | false -> None
+                                            | true  -> Option.get l |> List.map (Sc.GetAbsoluteLink baseUrl) |> Some
+            let links   = [links0; links1]
+                        |> List.filter Option.isSome
+                        |> List.collect ( fun optl -> Option.get optl)
+                        |> fun l -> match List.isEmpty l with
+                                    | true  -> None
+                                    | false -> Some l
+
+            match Option.isSome links with
+            | false -> html :: []
+            | true  -> html :: ( links |> Option.get |> Sc.FetchHtmls )
+
+        match includeFrame with
+        | Some includeFrame -> FetchHtmlWithFrame url
+        | None -> ( FetchHtml url ) :: []
 
     static member FetchHtmls (urls:list<string>) =
         let rec loop acc lst =
             match lst with
             | [] -> acc
-            | _  -> loop ( ( Sc.FetchDynamicHtml (List.head lst) ) :: acc ) ( List.tail lst )
+            | _  -> loop ( ( Sc.FetchHtml (List.head lst) ) @ acc ) ( List.tail lst )
         loop [] urls
 
     static member FetchHtmlsByNextLink attrName cssSelector url =
@@ -58,8 +64,8 @@ type Sc () =
             | "" -> acc
             | _  -> if acc.Length > 100 then acc
                     else
-                    let html =    nextLink  |> Sc.FetchDynamicHtml
-                    let node =    html      |> HtmlDocument.Parse |> HtmlDocument.elements
+                    let html =    nextLink  |> Sc.FetchHtml
+                    let node =    html      |> List.collect ( HtmlDocument.Parse >> HtmlDocument.elements )
                     let baseUrl = Sc.GetBaseUrl( url, node |> List.exactlyOne )
                     let link =    node      |> fun n -> n.CssSelect cssSelector
                                             |> fun l -> match Seq.isEmpty l with
@@ -67,7 +73,7 @@ type Sc () =
                                                         | false -> l |>  List.map ( HtmlNode.attributeValue attrName )
                                             |> List.exactlyOne
                                             |> Sc.GetAbsoluteLink baseUrl
-                    pages ( html :: acc ) link
+                    pages ( html @ acc ) link
         pages [] url
 
     static member GetBaseUrl (baseUrl:string, ?node:HtmlNode) =
@@ -82,9 +88,8 @@ type Sc () =
         | Some node -> f node
         | None ->
             baseUrl
-            |> Sc.FetchDynamicHtml
-            |> HtmlDocument.Parse
-            |> HtmlDocument.elements
+            |> Sc.FetchHtml
+            |> List.collect ( HtmlDocument.Parse >> HtmlDocument.elements )
             |> List.exactlyOne
             |> f
 
@@ -139,8 +144,8 @@ type Sc () =
             | "" -> acc
             | _  -> if acc.Length > 100 then acc
                     else
-                    let html = nextLink |> Sc.FetchDynamicHtml
-                    let node = html     |> HtmlDocument.Parse |> HtmlDocument.elements
+                    let html = nextLink |> Sc.FetchHtml
+                    let node = html     |> List.collect ( HtmlDocument.Parse >> HtmlDocument.elements )
                     let baseUrl = Sc.GetBaseUrl( url, node |> List.exactlyOne )
                     let link = node |> List.exactlyOne     |> Sc.GetAttributeValueBySubject attrName targetSelector judgeSelector
                                         |> fun lk -> match lk with
@@ -148,11 +153,11 @@ type Sc () =
                                                      | "" -> ""
                                                      | _  -> lk |> fun s -> Regex.Match( s, pattern ).Value
                                                              |> fun query -> System.UriBuilder( nextLink, Query = query ).ToString()
-                    pages ( html :: acc ) link
+                    pages ( html @ acc ) link
 
         pages [] url
 
-             
+
 
 
 
