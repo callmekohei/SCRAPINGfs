@@ -14,12 +14,35 @@ Prepare
 $ source build.bash
 ```
 
+Structure
+---
+```
+
+.
+└── ScrapingFs
+     ├── Sc
+        ├── FetchDynamicHtml
+        ├── FetchHtmls
+        ├── FetchHtmlsByNextLink 
+        ├── GetBaseUrl
+        ├── GetAbsoluteLink
+        ├── GetElements
+        ├── GetElementsWithString
+        └── GetAttributeValues
+     └── Util
+        ├── GoogleSearch
+        ├── SafeSubString
+        └── Justify
+```
+
 How to use
 ---
 #####GoogleSearch
 ```fsharp
-ScrapingFs.GoogleSearch "callmekohei"
-|> ScrapingFs.Justify
+open ScrapingFs
+
+Util.GoogleSearch "callmekohei"
+|> Util.Justify
 |> List.iter ( fun [a;b] -> printfn "%s\t%s" a b )
 ```
 result
@@ -34,6 +57,9 @@ GitHub - callmekohei/koffeeVBA: koffeeV ... https://github.com/callmekohei/koffe
 
 #####GetElemnts
 ```fsharp
+open FSharp.Data
+open ScrapingFs
+
 let s =
     """
     <body>
@@ -52,8 +78,9 @@ let s =
 s
 |> HtmlDocument.Parse
 |> HtmlDocument.body
-|> ScrapingFs.GetElements "div|a" "class" "foo|bar" 
+|> Sc.GetElements "div|a" "class" "foo|bar"
 |> printfn "%A"
+
 ```
 result
 ```
@@ -63,6 +90,9 @@ seq [<div class="foo" />; <div class="bar" />; <a class="foo" />; <a class="bar"
 
 #####GetElementsWithString
 ```fsharp
+open FSharp.Data
+open ScrapingFs
+
 let s =
     """
     <body>
@@ -89,7 +119,7 @@ let s =
 s
 |> HtmlDocument.Parse
 |> HtmlDocument.body
-|> ScrapingFs.GetElementsWithString "tr" "card" 
+|> Sc.GetElementsWithString "tr" "card"
 |> printfn "%A"
 ```
 result
@@ -107,6 +137,9 @@ seq[<tr>
 .  
 #####GetAttributeValues
 ```fsharp
+open FSharp.Data
+open ScrapingFs
+
 let s =
     """
     <frame src="callmekohei/menu.html" name="menu">
@@ -118,7 +151,7 @@ s
 |> HtmlDocument.Parse
 |> HtmlDocument.elements
 |> List.exactlyOne
-|> ScrapingFs.GetAttributeValues "src" "frame[src]"
+|> Sc.GetAttributeValues "src" "frame[src]"
 |> printfn "%A"
 
 ```
@@ -141,10 +174,11 @@ Some ["callmekohei/menu.html"; "callmekohei/company.html"]
 
 
 ```fsharp
+open ScrapingFs
+
 let cssSelectorShowsNextPageLink = "div.c_pager_num > ul > li.c_pager_num-next > a"
 
-url
-|> ScrapingFs.FetchHtmlsByNextLink "href" cssSelectorShowsNextPageLink
+url |> Sc.FetchHtmlsByNextLink "href" cssSelectorShowsNextPageLink
 ```
 result ( image )
 ```
