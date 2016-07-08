@@ -1,10 +1,16 @@
 #/bin/bash
 
+lib1='./packages/FSharp.Data/lib/net40/FSharp.Data.dll'
+lib2='./packages/FSharp.Data/lib/net40/FSharp.Data.DesignTime.dll'
+
 declare -a arr=(
 
     '--nologo'
     '--simpleresolution'
     '--resident'
+
+    '-r:'$lib1
+    '-r:'$lib2
 
     '-I:./packages/FSharp.Data/lib/net40/'
     '-r:FSharp.Data.dll'
@@ -19,6 +25,5 @@ then
 fi
 
 mkdir bin
-cp './packages/FSharp.Data/lib/net40/FSharp.Data.DesignTime.dll' ./bin
-cp './packages/FSharp.Data/lib/net40/FSharp.Data.dll' ./bin
-
+cp $lib1 ./bin
+cp $lib2 ./bin

@@ -16,10 +16,10 @@ type Sc () =
 
         let FetchHtml (url:string) =
             let req    = System.Net.WebRequest.Create(url)
-            let rep    = req.GetResponse ()
-            use stream = rep.GetResponseStream ()
+            let res    = req.GetResponse ()
+            use stream = res.GetResponseStream ()
             use reader =
-                match Regex.Match(rep.ContentType, @"charset=(.*)") with
+                match Regex.Match(res.ContentType, @"charset=(.*)") with
                 | m when m.Success -> new StreamReader(stream, Encoding.GetEncoding(m.Groups.[1].Value))
                 | _ -> new System.IO.StreamReader(stream)
             reader.ReadToEnd ()

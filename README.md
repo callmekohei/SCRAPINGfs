@@ -193,7 +193,23 @@ result ( image )
 
 
 .  
+Test
+---
+step1. set html files
+```text
+(^_^) [~] $ tree --matchdirs Sites/
+Sites/
+└── testHtml
+    ├── test0.html
+    ├── test1.html
+    ├── test2.html
+    └── test3.html
+```
 
+step2. start apache server
+```bash
+$ sudo startctl start
+```
 
 Thanks
 ---
