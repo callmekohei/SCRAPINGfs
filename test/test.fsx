@@ -25,7 +25,7 @@ module ScrapingFs_Test =
             |> List.map     ( fun n -> n.InnerText() )
             |> List.exactlyOne
 
-        do! assertEquals "It works!" ( innerText "http://localhost/" )
+        do! assertEquals "It works!" ( innerText @"http://localhost/" )
         do! assertEquals "test0"     ( innerText ( localServerUrl + "test0.html" ))
         do! assertEquals "test1"     ( innerText ( localServerUrl + "test1.html" ))
         do! assertEquals "test2"     ( innerText ( localServerUrl + "test2.html" ))
@@ -68,14 +68,14 @@ module ScrapingFs_Test =
 
     let ``Test GetAbsoluteLink`` = test {
 
-        let baseUrl = """http://www.abc.com/images/"""
+        let baseUrl = @"http://www.abc.com/images/"
 
-        do! assertEquals "http://www.abc.com"                     (  Sc.GetAbsoluteLink baseUrl """http://www.abc.com""" )
-        do! assertEquals "http://www.abc.com/images/picture/cats" (  Sc.GetAbsoluteLink baseUrl """picture/cats""" )
-        do! assertEquals "http://www.abc.com/picture/cats"        (  Sc.GetAbsoluteLink baseUrl """/picture/cats""" )
-        do! assertEquals "http://www.abc.com/images/#top"         (  Sc.GetAbsoluteLink baseUrl """#top""" )
-        do! assertEquals ""                                       (  Sc.GetAbsoluteLink baseUrl """mailto:someone@example.com""" )
-        do! assertEquals ""                                       (  Sc.GetAbsoluteLink baseUrl """javascript:alert('Hello World!');""" )
+        do! assertEquals @"http://www.abc.com"                     (  Sc.GetAbsoluteLink baseUrl @"http://www.abc.com" )
+        do! assertEquals @"http://www.abc.com/images/picture/cats" (  Sc.GetAbsoluteLink baseUrl @"picture/cats" )
+        do! assertEquals @"http://www.abc.com/picture/cats"        (  Sc.GetAbsoluteLink baseUrl @"/picture/cats" )
+        do! assertEquals @"http://www.abc.com/images/#top"         (  Sc.GetAbsoluteLink baseUrl @"#top" )
+        do! assertEquals ""                                        (  Sc.GetAbsoluteLink baseUrl @"mailto:someone@example.com" )
+        do! assertEquals ""                                        (  Sc.GetAbsoluteLink baseUrl @"javascript:alert('Hello World!');" )
 
     }
 
