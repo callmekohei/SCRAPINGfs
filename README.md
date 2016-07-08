@@ -208,7 +208,7 @@ Sites/
 
 step2. start apache server
 ```bash
-$ sudo startctl start
+$ sudo apachectl start
 ```
 
 Thanks
